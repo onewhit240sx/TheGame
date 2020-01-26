@@ -50,6 +50,9 @@ TagManager:
   - name: GameObject
     uniqueID: 4182532943
     locked: 0
+  - name: Sign
+    uniqueID: 3811640081
+    locked: 0
   - name: Player
     uniqueID: 1225341167
     locked: 0

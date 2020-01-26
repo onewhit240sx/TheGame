@@ -26,7 +26,8 @@ public class PlayerMovement : MonoBehaviour
         change = Vector3.zero;
         change.x = Input.GetAxisRaw("Horizontal");
         change.y = Input.GetAxisRaw("Vertical");
-        UpdateAnimationAndMove(); 
+        UpdateAnimationAndMove();
+        PlayerAttack(); 
 
        
     }
@@ -49,5 +50,17 @@ public class PlayerMovement : MonoBehaviour
     void MoveCharactor()
     {
         myRigidbody.MovePosition(transform.position + change * speed * Time.deltaTime); 
+    }
+
+    void PlayerAttack()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            animator.SetBool("Attacking", true);
+        }
+        else
+        {
+            animator.SetBool("Attacking", false); 
+        }
     }
 }
