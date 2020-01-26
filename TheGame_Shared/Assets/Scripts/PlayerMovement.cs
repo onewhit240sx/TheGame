@@ -2,8 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//enum is like a enum but has more states not just true or false
+//you can add many states.
+public enum PlayerState
+{
+    walk,
+    attack,
+    interact
+}
 public class PlayerMovement : MonoBehaviour
 {
+    public PlayerState currentState;
     public float speed;
     private Rigidbody2D myRigidbody;
     private Vector3 change;
@@ -13,8 +22,11 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        currentState = PlayerState.walk; 
         animator = GetComponent<Animator>(); 
-        myRigidbody = GetComponent<Rigidbody2D>(); 
+        myRigidbody = GetComponent<Rigidbody2D>();
+        animator.SetFloat("moveX", 0);
+        animator.SetFloat("moveY", -1); 
 
       
 
@@ -26,10 +38,26 @@ public class PlayerMovement : MonoBehaviour
         change = Vector3.zero;
         change.x = Input.GetAxisRaw("Horizontal");
         change.y = Input.GetAxisRaw("Vertical");
-        UpdateAnimationAndMove();
-        PlayerAttack(); 
+        if(Input.GetButtonDown("attack") && currentState != PlayerState.attack )
+        {
+            StartCoroutine(AttackCO());
+        }
+        else if(currentState == PlayerState.walk)
+        {
+            UpdateAnimationAndMove();
+        }
+       
 
        
+    }
+    private IEnumerator AttackCO()
+    {
+        animator.SetBool("attacking", true);
+        currentState = PlayerState.attack;
+        yield return null;
+        animator.SetBool("attacking", false);
+        yield return new WaitForSeconds(.3f);
+        currentState = PlayerState.walk; 
     }
 
     void UpdateAnimationAndMove()
@@ -49,18 +77,9 @@ public class PlayerMovement : MonoBehaviour
     }
     void MoveCharactor()
     {
+        change.Normalize(); 
         myRigidbody.MovePosition(transform.position + change * speed * Time.deltaTime); 
     }
 
-    void PlayerAttack()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            animator.SetBool("Attacking", true);
-        }
-        else
-        {
-            animator.SetBool("Attacking", false); 
-        }
-    }
+   
 }
