@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class enemy_behaviour : MonoBehaviour
+public class EnemyBehaviour : MonoBehaviour
 {
     public float MovementSpeed;
     public float AttackSpeed;
@@ -57,6 +57,7 @@ public class enemy_behaviour : MonoBehaviour
         {
             _isDiving = true;
             mAnimator.SetBool("isDiving", false);
+            // get into dive position
         }
     }
 
