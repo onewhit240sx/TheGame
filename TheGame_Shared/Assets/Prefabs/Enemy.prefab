@@ -96,6 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   idleRange: 5
+  diveRange: 2
   target: {fileID: 0}
   animator: {fileID: 329698548429552297}
 --- !u!95 &329698548429552297

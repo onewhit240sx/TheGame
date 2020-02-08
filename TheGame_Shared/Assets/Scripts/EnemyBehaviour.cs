@@ -5,16 +5,15 @@ using UnityEngine;
 public class EnemyBehaviour : MonoBehaviour
 {
     public float MovementSpeed;
-    public float AttackSpeed;
     public float NoticeRange;
     public float AttackRange;
 
-    public Rigidbody2D mRigidBody;
-    public Transform mTarget;
-    public Animator mAnimator;
+    private Rigidbody2D mRigidBody;
+    private Transform mTarget;
+    private Animator mAnimator;
 
-    private bool _isDiving = false;
     private float _TargetDistance;
+    private bool _isActive = true;
 
     // Start is called before the first frame update
     void Start() {
@@ -27,68 +26,58 @@ public class EnemyBehaviour : MonoBehaviour
     void Update() {
        _TargetDistance = Vector2.Distance(transform.position, mTarget.position);
 
-        // Attack Target
-        if(_TargetDistance < AttackRange)
+        if (_isActive)
         {
-            Attack();
-        } 
+            // Attack Target
+            if (_TargetDistance < AttackRange)
+            {
+                Attack();
+            }
 
-        // Persuit Target
-        else if(_TargetDistance < NoticeRange && _TargetDistance > AttackRange) 
-        {
-            Pursue();
-        }
+            // Persuit Target
+            else if (_TargetDistance < NoticeRange && _TargetDistance > AttackRange)
+            {
+                Pursue();
+            }
 
-        // Idle
-        else
-        {
-            Idle();
+            // Idle
+            else if (_TargetDistance > NoticeRange)
+            {
+                Idle();
+            }
         }
     }
 
     private void Attack()
     {
-        if (_isDiving)
-        {
-            mAnimator.SetBool("isDiving", true);
-            Dive();
-        }
-        else
-        {
-            _isDiving = true;
-            mAnimator.SetBool("isDiving", false);
-            // get into dive position
-        }
-    }
-
-    private void Dive()
-    {
-        int framePosition = Time.frameCount % 3;
-
-        if (_TargetDistance == 0)
-        {
-            mAnimator.SetBool("isAttacking", true);
-        }
-        else
-        {
-            mAnimator.SetBool("isAttacking", false);
-            if (framePosition == 0)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, mTarget.position, (AttackSpeed) * Time.deltaTime);
-            }
-        }
+        mAnimator.SetBool("isAttacking", true);
     }
 
     private void Pursue()
     {
-        mAnimator.SetBool("isDiving", false);
+        mAnimator.SetBool("isAttacking", false);
         mAnimator.SetBool("isFollowing", true);
         transform.position = Vector2.MoveTowards(transform.position, mTarget.position, MovementSpeed * Time.deltaTime);
     }
 
     private void Idle()
     {
-        mAnimator.SetBool("isDiving", false);
-        mAnimator.SetBool("isFollowing", false);
+        foreach(AnimatorControllerParameter parameter in mAnimator.parameters)
+        {
+            mAnimator.SetBool(parameter.name, false);
+        }
+    }
+
+    public void Hit()
+    {
+        mAnimator.SetTrigger("damaged");
+        Debug.Log("hit");
+    }
+
+    IEnumerator pause()
+    {
+        yield return new WaitForSeconds(.5f);
+        _isActive = true;
+        
     }
 }
